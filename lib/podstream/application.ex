@@ -22,7 +22,8 @@ defmodule Podstream.Application do
       # {Podstream.Worker, arg},
       # Start to serve requests, typically the last entry
       PodstreamWeb.Endpoint,
-      Podstream.Podfetcher
+      #Podstream.Podfetcher
+      Podstream.FeedFetcher
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

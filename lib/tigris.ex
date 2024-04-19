@@ -8,7 +8,13 @@ defmodule Tigris do
         contents
       end)
     end
-  
+
+    def list_keys!(prefix \\ "") do
+      prefix
+      |> list!()
+      |> Enum.map(& &1.key)
+    end
+
     def put!(key, data) do
       bucket!()
       |> S3.put_object(key, data)

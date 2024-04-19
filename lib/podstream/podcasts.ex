@@ -98,4 +98,19 @@ defmodule Podstream.Podcasts do
   rescue
     _ -> default
   end
+
+  def get_entries do
+    Tigris.list_keys!("podstream/entry/")
+    |> Task.async_stream(&Tigris.get/1)
+    |> Enum.map(fn {:ok, entry} ->
+      Jason.decode!(entry)
+    end)
+  end
+
+  @feed_base "podstream/entry_feed/"
+  def store_feed(id, feed) do
+    data = Jason.encode!(feed)
+
+    Tigris.put!(Path.join(@feed_base, "#{id}.json"), data)
+  end
 end
