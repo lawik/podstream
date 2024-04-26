@@ -81,6 +81,7 @@ defmodule Podstream.Podcasts do
         |> Path.join()
 
     Tigris.put!(key, Jason.encode!(entry))
+    Phoenix.PubSub.broadcast!(Podstream.PubSub, "podcasts", {:entry, entry.id, entry.title})
     #Logger.info("Stored entry: #{key}")
   end
 
@@ -101,7 +102,7 @@ defmodule Podstream.Podcasts do
 
   def get_entries do
     Tigris.list_keys!("podstream/entry/")
-    |> Task.async_stream(&Tigris.get/1)
+    |> Task.async_stream(&Tigris.get/1, timeout: 120_000)
     |> Enum.map(fn {:ok, entry} ->
       Jason.decode!(entry)
     end)
@@ -112,5 +113,6 @@ defmodule Podstream.Podcasts do
     data = Jason.encode!(feed)
 
     Tigris.put!(Path.join(@feed_base, "#{id}.json"), data)
+    Phoenix.PubSub.broadcast!(Podstream.PubSub, "podcasts", {:feed, id, feed.feed.title})
   end
 end

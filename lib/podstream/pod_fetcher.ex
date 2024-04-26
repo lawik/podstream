@@ -24,8 +24,7 @@ defmodule Podstream.Podfetcher do
             entries
             |> Task.async_stream(fn entry ->
                 Podstream.Podcasts.store_entry(entry)
-                Phoenix.PubSub.broadcast!(Podstream.PubSub, "podcasts", {:entry, entry.id, entry.title})
-            end, max_concurrency: System.schedulers_online() * 2)
+            end, max_concurrency: System.schedulers_online() * 2, timeout: :infinity)
             |> Stream.run()
         end)
         Logger.debug("Uploaded #{Enum.count(entries)} entries in #{t/1000}ms")
